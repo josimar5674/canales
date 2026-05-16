@@ -9,11 +9,8 @@
         <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
             Crear Usuario
         </h1>
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
 
-    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-        Crear Usuario
-    </h1>
+
 
     @if ($errors->any())
 
@@ -33,7 +30,7 @@
 
     @endif
 
-    <form>
+ 
         <form
             method="POST"
             action="{{ route('users.store') }}"
