@@ -23,10 +23,16 @@ class ChatBox extends Component
 
     public $reference_date;
 
-    public function mount(Channel $channel)
-    {
-        $this->channel = $channel;
+   public function mount(Channel $channel = null)
+{
+    if (!$channel) {
+
+        $channel = Channel::where('active', true)->first();
+
     }
+
+    $this->channel = $channel;
+}
 
 public $refreshKey = 0;
 
