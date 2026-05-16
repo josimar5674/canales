@@ -13,16 +13,16 @@ return new class extends Migration
     {
       Schema::table('users', function (Blueprint $table) {
 
-   //$table->string('username')->nullable()->after('id');
+   $table->string('username')->nullable()->after('id');
 
-   // $table->string('photo')->nullable();
+   $table->string('photo')->nullable();
 
-    //$table->enum('role', [
-      //  'admin',
-        //'user'
-    //])->default('user');
+    $table->enum('role', [
+        'admin',
+        'user'
+    ])->default('user');
 
-    //$table->boolean('active')->default(true);
+    $table->boolean('active')->default(true);
 
 });
     }
