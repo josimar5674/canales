@@ -146,9 +146,11 @@ use Illuminate\Support\Str;
     </div>
 
     <!-- INPUT -->
-    <div
-        class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-2 md:p-4"
-        :class="minimized ? 'h-16 overflow-hidden' : ''">
+<div
+    class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
+           px-0 py-2 md:px-4 md:py-4"
+    :class="minimized ? 'h-16 overflow-hidden' : ''"
+>
 
         <div class="flex justify-between items-center mb-2">
 
@@ -164,9 +166,9 @@ use Illuminate\Support\Str;
             </button>
 
         </div>
-        <form
-            wire:submit.prevent="sendMessage"
-            class="space-y-3">
+<form
+    wire:submit.prevent="sendMessage"
+    class="space-y-3 px-2 md:px-0">
 
             <!-- MENSAJE -->
             <input
