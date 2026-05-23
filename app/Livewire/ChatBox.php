@@ -48,7 +48,7 @@ public function sendMessage()
 {
     $this->validate([
         'content' => 'nullable',
-        'file' => 'nullable|max:30720'
+        'file' => 'nullable|file|max:30720'
     ]);
 
     if (!$this->content && !$this->file) {
@@ -62,7 +62,9 @@ public function sendMessage()
         'reference_date' => $this->reference_date
     ]);
 
-    if ($this->file && $this->file->isValid()) {
+   if ($this->file) {
+    logger($this->file->getClientOriginalName());
+logger($this->file->getMimeType());
 
         try {
 
