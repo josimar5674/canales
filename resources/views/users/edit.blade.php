@@ -158,6 +158,39 @@
 
             </div>
 
+            <!-- CANALES -->
+<div>
+
+    <label class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+        Canales permitidos
+    </label>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+        @foreach($channels as $channel)
+
+            <label class="flex items-center gap-3 bg-gray-100 dark:bg-gray-700 p-3 rounded-xl">
+
+                <input
+                    type="checkbox"
+                    name="channels[]"
+                    value="{{ $channel->id }}"
+                    @checked($user->channels->contains($channel->id))
+                    class="rounded border-gray-300"
+                >
+
+                <span class="text-gray-800 dark:text-white">
+                    # {{ $channel->name }}
+                </span>
+
+            </label>
+
+        @endforeach
+
+    </div>
+
+</div>
+
             <!-- ACTIVO -->
             <div class="flex items-center gap-3">
 

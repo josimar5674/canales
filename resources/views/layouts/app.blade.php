@@ -98,8 +98,9 @@
             </p>
 
             <nav class="space-y-1">
+@foreach($channels ?? [] as $item)
 
-      @foreach($channels ?? [] as $item)
+@if(auth()->user()->role === 'admin' || $item->active)
 
 <a href="{{ route('dashboard', $item->id) }}"
    class="flex items-center gap-2 px-3 py-2 rounded-lg transition
@@ -109,20 +110,22 @@
 
     <span>#</span>
 
-   <span>
-    {{ $item->name }}
+    <span>
+        {{ $item->name }}
 
-    @if(auth()->user()->role === 'admin' && !$item->active)
+        @if(auth()->user()->role === 'admin' && !$item->active)
 
-        <span class="text-red-400 text-xs">
-            (Inactivo)
-        </span>
+            <span class="text-red-400 text-xs">
+                (Inactivo)
+            </span>
 
-    @endif
+        @endif
 
-</span>
+    </span>
 
 </a>
+
+@endif
 
 @endforeach
             </nav>

@@ -11,18 +11,60 @@ Route::get('/', function () {
 
 Route::get('/dashboard/{channel?}', function (Channel $channel = null) {
 
+    // ADMIN VE TODO
+    if (auth()->user()->role === 'admin') {
+
+       if (auth()->user()->role === 'admin') {
+
     $channels = Channel::all();
 
+} else {
+
+    $channels = auth()->user()
+        ->channels()
+        ->where('active', true)
+        ->get();
+
+}
+
+    } else {
+
+        // USUARIO SOLO VE SUS CANALES
+        $channels = auth()->user()->channels;
+
+    }
+
+    // SI NO VIENE CANAL, TOMAR EL PRIMERO DISPONIBLE
     if (!$channel) {
 
         $channel = $channels->first();
 
     }
+    if (
+    auth()->user()->role !== 'admin'
+    &&
+    !$channel->active
+) {
+
+    abort(403);
+
+}
+
+    // BLOQUEAR ACCESO MANUAL POR URL
+    if (
+        $channel
+        &&
+        auth()->user()->role !== 'admin'
+        &&
+        !$channels->contains($channel->id)
+    ) {
+
+        abort(403);
+
+    }
 
     $messages = $channel
-
         ? $channel->messages()->with('user')->latest()->get()
-
         : collect();
 
     return view('dashboard', compact(
@@ -53,14 +95,7 @@ Route::middleware([
 });
 
 
-Route::middleware([
-    'auth',
-    'admin'
-])->group(function () {
 
-    Route::resource('users', UserController::class);
-
-});
 
 
 Route::middleware([

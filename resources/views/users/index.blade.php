@@ -7,7 +7,8 @@
     <!-- HEADER -->
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
 
-        <h1 class="text-2xl font-bold">
+             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+
             Usuarios
         </h1>
 

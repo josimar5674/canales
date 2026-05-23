@@ -48,6 +48,9 @@ public function messages()
     return $this->hasMany(Message::class);
 }
 
-
+public function channels()
+{
+    return $this->belongsToMany(Channel::class);
+}
 
 }

@@ -27,7 +27,18 @@ class ChatBox extends Component
 {
     if (!$channel) {
 
-        $channel = Channel::where('active', true)->first();
+       if (auth()->user()->role === 'admin') {
+
+    $channel = Channel::where('active', true)->first();
+
+} else {
+
+    $channel = auth()->user()
+        ->channels()
+        ->where('active', true)
+        ->first();
+
+}
 
     }
 

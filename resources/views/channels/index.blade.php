@@ -19,11 +19,13 @@
 
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+
+
+  <div class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
 
         <table class="w-full">
 
-            <thead class="bg-gray-100 dark:bg-gray-700">
+            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
 
                 <tr>
 
@@ -46,60 +48,59 @@
             <tbody>
 
                 @foreach($channels as $channel)
+<tr class="border-t dark:border-gray-700">
 
-                    <tr class="border-t dark:border-gray-700">
+    <td class="p-4 text-gray-800 dark:text-gray-200">
+        # {{ $channel->name }}
+    </td>
 
-                        <td class="p-4">
-                            # {{ $channel->name }}
-                        </td>
+    <td class="p-4 text-gray-800 dark:text-gray-200">
 
-                        <td class="p-4">
+        @if($channel->active)
 
-                            @if($channel->active)
+            <span class="text-green-500">
+                Activo
+            </span>
 
-                                <span class="text-green-500">
-                                    Activo
-                                </span>
+        @else
 
-                            @else
+            <span class="text-red-500">
+                Inactivo
+            </span>
 
-                                <span class="text-red-500">
-                                    Inactivo
-                                </span>
+        @endif
 
-                            @endif
+    </td>
 
-                        </td>
+    <td class="p-4 flex gap-3 text-gray-800 dark:text-gray-200">
 
-                        <td class="p-4 flex gap-3">
+        <a
+            href="{{ route('channels.edit', $channel) }}"
+            class="text-blue-500"
+        >
+            Editar
+        </a>
 
-                            <a
-                                href="{{ route('channels.edit', $channel) }}"
-                                class="text-blue-500"
-                            >
-                                Editar
-                            </a>
+        <form
+            method="POST"
+            action="{{ route('channels.destroy', $channel) }}"
+        >
 
-                            <form
-                                method="POST"
-                                action="{{ route('channels.destroy', $channel) }}"
-                            >
+            @csrf
+            @method('DELETE')
 
-                                @csrf
-                                @method('DELETE')
+            <button
+                onclick="return confirm('Eliminar canal?')"
+                class="text-red-500"
+            >
+                Eliminar
+            </button>
 
-                                <button
-                                    onclick="return confirm('Eliminar canal?')"
-                                    class="text-red-500"
-                                >
-                                    Eliminar
-                                </button>
+        </form>
 
-                            </form>
+    </td>
 
-                        </td>
-
-                    </tr>
+</tr>
 
                 @endforeach
 
