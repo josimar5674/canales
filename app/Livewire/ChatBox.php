@@ -44,38 +44,50 @@ public function refreshChat()
 
 
 
-    public function sendMessage()
-    {
-        $this->validate([
-            'content' => 'nullable',
-            'file' => 'nullable|max:30720'
-        ]);
+public function sendMessage()
+{
+    $this->validate([
+        'content' => 'nullable',
+        'file' => 'nullable|max:30720'
+    ]);
 
-        if (!$this->content && !$this->file) {
-            return;
+    if (!$this->content && !$this->file) {
+        return;
+    }
+
+    $message = Message::create([
+        'channel_id' => $this->channel->id,
+        'user_id' => auth()->id(),
+        'content' => $this->content,
+        'reference_date' => $this->reference_date
+    ]);
+
+    if ($this->file && $this->file->isValid()) {
+
+        try {
+
+            $path = $this->file->store('attachments', 'public');
+
+            Attachment::create([
+                'message_id' => $message->id,
+                'file_name' => $this->file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_type' => $this->file->getMimeType(),
+                'file_size' => $this->file->getSize(),
+                'uploaded_by' => auth()->id()
+            ]);
+
+        } catch (\Exception $e) {
+
+            logger($e->getMessage());
+
         }
 
-        $message = Message::create([
-            'channel_id' => $this->channel->id,
-            'user_id' => auth()->id(),
-            'content' => $this->content,
-            'reference_date' => $this->reference_date
-        ]);
-
-  if ($this->file && $this->file->isValid()) {
+    }
 
     try {
 
-        $path = $this->file->store('attachments', 'public');
-
-        Attachment::create([
-            'message_id' => $message->id,
-            'file_name' => $this->file->getClientOriginalName(),
-            'file_path' => $path,
-            'file_type' => $this->file->getMimeType(),
-            'file_size' => $this->file->getSize(),
-            'uploaded_by' => auth()->id()
-        ]);
+        event(new MessageSent($message));
 
     } catch (\Exception $e) {
 
@@ -83,15 +95,12 @@ public function refreshChat()
 
     }
 
+    $this->reset([
+        'content',
+        'file',
+        'reference_date'
+    ]);
 }
-
-event(new MessageSent($message));
-        $this->reset([
-            'content',
-            'file',
-            'reference_date'
-        ]);
-    }
 
     public function render()
     {
