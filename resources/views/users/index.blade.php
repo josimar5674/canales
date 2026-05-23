@@ -108,26 +108,26 @@
 
         @foreach($users as $user)
 
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
-
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 overflow-hidden">
                 <!-- TOP -->
-         <div class="flex items-center gap-3">
+<div class="flex items-center gap-4">
 
     <img
         src="{{ $user->photo
             ? asset('storage/'.$user->photo)
             : 'https://ui-avatars.com/api/?name='.$user->name }}"
-        class="w-14 h-14 rounded-full object-cover shrink-0"
+        class="w-16 h-16 min-w-[64px] max-w-[64px]
+               rounded-full object-cover"
     >
 
-    <div class="min-w-0">
+    <div class="flex-1 overflow-hidden">
 
-        <h2 class="font-bold text-lg text-gray-800 dark:text-white truncate">
+        <h2 class="font-bold text-lg text-gray-800 dark:text-white">
             {{ $user->name }}
         </h2>
 
         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
-            {{ $user->username }}
+            {{ '@'.$user->username }}
         </p>
 
     </div>
