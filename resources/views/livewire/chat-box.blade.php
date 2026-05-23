@@ -150,23 +150,38 @@ space-y-4 px-1 py-2 md:p-6">
 <div
     class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
            px-0 py-2 md:px-4 md:py-4"
-    x-show="!minimized || window.innerWidth >= 768"
 >
 
-        <div class="flex justify-between items-center mb-2">
+    <!-- BOTON SIEMPRE VISIBLE -->
+    <div class="flex justify-between items-center mb-2 px-2">
 
-            <button
-                type="button"
-                @click="minimized = !minimized"
-                class="text-gray-400 text-sm">
+        <button
+            type="button"
+            @click="minimized = !minimized"
+            class="text-gray-400 text-sm">
 
-                <span x-show="!minimized">🔽 Minimizar</span>
+            <span x-show="!minimized">🔽 Minimizar</span>
 
-                <span x-show="minimized">🔼 Expandir</span>
+            <span x-show="minimized">🔼 Expandir</span>
 
-            </button>
+        </button>
 
-        </div>
+    </div>
+
+    <!-- FORM OCULTABLE -->
+    <div x-show="!minimized" x-transition>
+
+        <form
+            wire:submit.prevent="sendMessage"
+            class="space-y-3 px-1 md:px-0">
+
+            <!-- TODO TU FORM -->
+
+        </form>
+
+    </div>
+
+</div>
 <form
     wire:submit.prevent="sendMessage"
     class="space-y-3">
