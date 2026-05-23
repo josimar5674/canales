@@ -14,10 +14,11 @@ use Illuminate\Support\Str;
     x-on:message-received.window="$wire.$refresh()">
 
     <!-- MENSAJES -->
-    <div
-        wire:key="chat-{{ $refreshKey }}"
-        id="chat-container"
-        class="flex-1 overflow-y-auto overflow-x-hidden space-y-6 p-6">
+<div
+    wire:key="chat-{{ $refreshKey }}"
+    id="chat-container"
+    class="flex-1 overflow-y-auto overflow-x-hidden
+           space-y-6 px-2 py-4 md:p-6">
 
         @foreach($messages as $message)
 
