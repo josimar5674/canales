@@ -94,7 +94,7 @@ use Illuminate\Support\Str;
 
                     <img
                         src="{{ asset('storage/' . $attachment->file_path) }}"
-                        class="rounded-xl max-w-xs border dark:border-gray-700 hover:opacity-90 transition"
+                       class="rounded-xl border dark:border-gray-700 hover:opacity-90 transition max-w-full md:max-w-xs max-h-64 object-cover"
                     >
 
                 </a>
@@ -163,7 +163,7 @@ use Illuminate\Support\Str;
             <!-- MENSAJE -->
             <input
                 type="text"
-                wire:model="content"
+                wire:model.live="content"
                 placeholder="Escribe un mensaje..."
                 class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
 
@@ -184,6 +184,7 @@ use Illuminate\Support\Str;
                 <input
                     type="file"
                     wire:model="file"
+                        accept="image/*,video/*,.pdf"
                     class="text-sm text-gray-500 dark:text-gray-300">
 
                 <!-- LOADING -->
@@ -197,10 +198,38 @@ use Illuminate\Support\Str;
                 </div>
 
                 <!-- BOTON -->
-                <button
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl">
-                    Enviar
-                </button>
+               <button
+
+    type="submit"
+
+    wire:loading.attr="disabled"
+
+    wire:target="file,sendMessage"
+
+    class="bg-blue-600 hover:bg-blue-700
+           disabled:opacity-50
+           disabled:cursor-not-allowed
+           text-white px-5 py-3 rounded-xl">
+
+    <span wire:loading.remove wire:target="file,sendMessage">
+
+        Enviar
+
+    </span>
+
+    <span wire:loading wire:target="file">
+
+        Subiendo archivo...
+
+    </span>
+
+    <span wire:loading wire:target="sendMessage">
+
+        Enviando...
+
+    </span>
+
+</button>
 
             </div>
 
@@ -218,7 +247,7 @@ use Illuminate\Support\Str;
 
             position: "top",
             enableTime: true,
-
+            disableMobile: true,
             noCalendar: false,
 
             time_24hr: true,
