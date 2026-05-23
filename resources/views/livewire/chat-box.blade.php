@@ -146,13 +146,13 @@ space-y-4 px-1 py-2 md:p-6">
 
     </div>
 
-    <!-- INPUT -->
+  <!-- INPUT -->
 <div
     class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
            px-0 py-2 md:px-4 md:py-4"
 >
 
-    <!-- BOTON SIEMPRE VISIBLE -->
+    <!-- BOTON MINIMIZAR -->
     <div class="flex justify-between items-center mb-2 px-2">
 
         <button
@@ -168,23 +168,12 @@ space-y-4 px-1 py-2 md:p-6">
 
     </div>
 
-    <!-- FORM OCULTABLE -->
+    <!-- FORMULARIO -->
     <div x-show="!minimized" x-transition>
 
         <form
             wire:submit.prevent="sendMessage"
             class="space-y-3 px-1 md:px-0">
-
-            <!-- TODO TU FORM -->
-
-        </form>
-
-    </div>
-
-</div>
-<form
-    wire:submit.prevent="sendMessage"
-    class="space-y-3">
 
             <!-- MENSAJE -->
             <input
@@ -193,7 +182,7 @@ space-y-4 px-1 py-2 md:p-6">
                 placeholder="Escribe un mensaje..."
                 class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
 
-            <!-- FECHA REFERENCIA -->
+            <!-- FECHA -->
             <div class="flex items-center gap-2">
 
                 <!-- BOTON FECHA -->
@@ -201,10 +190,12 @@ space-y-4 px-1 py-2 md:p-6">
                     type="button"
                     @click="showDate = !showDate"
                     class="bg-gray-700 text-white px-3 py-2 rounded-xl">
+
                     📅
+
                 </button>
 
-                <!-- DATEPICKER -->
+                <!-- INPUT FECHA -->
                 <div
                     x-show="showDate"
                     x-transition
@@ -221,8 +212,9 @@ space-y-4 px-1 py-2 md:p-6">
 
             </div>
 
-            <!-- FOOTER INPUT -->
+            <!-- FOOTER -->
             <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+
                 <!-- FILE -->
                 <input
                     type="file"
@@ -240,19 +232,15 @@ space-y-4 px-1 py-2 md:p-6">
 
                 </div>
 
-                <!-- BOTON -->
+                <!-- BOTON ENVIAR -->
                 <button
-
                     type="submit"
-
                     wire:loading.attr="disabled"
-
                     wire:target="file,sendMessage"
-
                     class="bg-blue-600 hover:bg-blue-700
-           disabled:opacity-50
-           disabled:cursor-not-allowed
-           text-white px-5 py-3 rounded-xl">
+                           disabled:opacity-50
+                           disabled:cursor-not-allowed
+                           text-white px-5 py-3 rounded-xl">
 
                     <span wire:loading.remove wire:target="file,sendMessage">
 
