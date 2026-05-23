@@ -62,19 +62,28 @@ public function refreshChat()
             'reference_date' => $this->reference_date
         ]);
 
-        if ($this->file) {
+  if ($this->file && $this->file->isValid()) {
 
-            $path = $this->file->store('attachments', 'public');
+    try {
 
-            Attachment::create([
-                'message_id' => $message->id,
-                'file_name' => $this->file->getClientOriginalName(),
-                'file_path' => $path,
-                'file_type' => $this->file->getMimeType(),
-                'file_size' => $this->file->getSize(),
-                'uploaded_by' => auth()->id()
-            ]);
-        }
+        $path = $this->file->store('attachments', 'public');
+
+        Attachment::create([
+            'message_id' => $message->id,
+            'file_name' => $this->file->getClientOriginalName(),
+            'file_path' => $path,
+            'file_type' => $this->file->getMimeType(),
+            'file_size' => $this->file->getSize(),
+            'uploaded_by' => auth()->id()
+        ]);
+
+    } catch (\Exception $e) {
+
+        logger($e->getMessage());
+
+    }
+
+}
 
 event(new MessageSent($message));
         $this->reset([
