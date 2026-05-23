@@ -169,7 +169,7 @@ use Illuminate\Support\Str;
         </div>
 <form
     wire:submit.prevent="sendMessage"
-    class="space-y-3 px-2 md:px-0">
+    class="space-y-3">
 
             <!-- MENSAJE -->
             <input
