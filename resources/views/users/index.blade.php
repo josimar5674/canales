@@ -25,7 +25,7 @@
 
         <table class="w-full">
 
-            <<thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
 
                 <tr>
 
