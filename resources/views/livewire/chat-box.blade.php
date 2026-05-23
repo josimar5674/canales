@@ -10,16 +10,14 @@ use Illuminate\Support\Str;
     id="chat-box-component"
 
     class="flex flex-col h-full"
-    x-data
-    x-on:message-received.window="$wire.$refresh()"
->
+    x-data="{ showDate: false, minimized: false }"
+    x-on:message-received.window="$wire.$refresh()">
 
     <!-- MENSAJES -->
-<div
-    wire:key="chat-{{ $refreshKey }}"
-    id="chat-container"
-    class="flex-1 overflow-y-auto overflow-x-hidden space-y-6 p-6"
->
+    <div
+        wire:key="chat-{{ $refreshKey }}"
+        id="chat-container"
+        class="flex-1 overflow-y-auto overflow-x-hidden space-y-6 p-6">
 
         @foreach($messages as $message)
 
@@ -28,8 +26,8 @@ use Illuminate\Support\Str;
             <div class="flex gap-3 items-start">
 
                 <!-- AVATAR -->
-               <img
-    src="{{ $message->user->photo
+                <img
+                    src="{{ $message->user->photo
         ? asset('storage/'.$message->user->photo)
         : 'https://ui-avatars.com/api/?name='.$message->user->name }}"
                     class="w-12 h-12 rounded-full">
@@ -72,76 +70,70 @@ use Illuminate\Support\Str;
 
                     <!-- ADJUNTOS -->
                     <!-- ADJUNTOS -->
-@if($message->attachments->count())
+                    @if($message->attachments->count())
 
-    <div class="mt-4 space-y-3">
+                    <div class="mt-4 space-y-3">
 
-        @foreach($message->attachments as $attachment)
+                        @foreach($message->attachments as $attachment)
 
-            @php
+                        @php
 
-                $type = $attachment->file_type;
+                        $type = $attachment->file_type;
 
-            @endphp
+                        @endphp
 
-            <!-- IMAGEN -->
-            @if(Str::startsWith($type, 'image/'))
+                        <!-- IMAGEN -->
+                        @if(Str::startsWith($type, 'image/'))
 
-                <a
-                    href="{{ asset('storage/' . $attachment->file_path) }}"
-                    target="_blank"
-                >
+                        <a
+                            href="{{ asset('storage/' . $attachment->file_path) }}"
+                            target="_blank">
 
-                    <img
-                        src="{{ asset('storage/' . $attachment->file_path) }}"
-                       class="rounded-xl border dark:border-gray-700 hover:opacity-90 transition max-w-full md:max-w-xs max-h-64 object-cover"
-                    >
+                            <img
+                                src="{{ asset('storage/' . $attachment->file_path) }}"
+                                class="rounded-xl border dark:border-gray-700 hover:opacity-90 transition max-w-full md:max-w-xs max-h-64 object-cover">
 
-                </a>
+                        </a>
 
-            <!-- VIDEO -->
-            @elseif(Str::startsWith($type, 'video/'))
+                        <!-- VIDEO -->
+                        @elseif(Str::startsWith($type, 'video/'))
 
-                <video
-                    controls
-                    class="rounded-xl max-w-sm"
-                >
+                        <video
+                            controls
+                            class="rounded-xl max-w-sm">
 
-                    <source
-                        src="{{ asset('storage/' . $attachment->file_path) }}"
-                        type="{{ $type }}"
-                    >
+                            <source
+                                src="{{ asset('storage/' . $attachment->file_path) }}"
+                                type="{{ $type }}">
 
-                </video>
+                        </video>
 
-            <!-- PDF -->
-            @elseif($type === 'application/pdf')
+                        <!-- PDF -->
+                        @elseif($type === 'application/pdf')
 
-                <iframe
-                    src="{{ asset('storage/' . $attachment->file_path) }}"
-                    class="w-full h-96 rounded-xl border dark:border-gray-700"
-                ></iframe>
+                        <iframe
+                            src="{{ asset('storage/' . $attachment->file_path) }}"
+                            class="w-full h-96 rounded-xl border dark:border-gray-700"></iframe>
 
-            <!-- OTROS -->
-            @else
+                        <!-- OTROS -->
+                        @else
 
-                <a
-                    href="{{ asset('storage/' . $attachment->file_path) }}"
-                    target="_blank"
-                    class="block bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-                >
+                        <a
+                            href="{{ asset('storage/' . $attachment->file_path) }}"
+                            target="_blank"
+                            class="block bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition">
 
-                    📎 {{ $attachment->file_name }}
+                            📎 {{ $attachment->file_name }}
 
-                </a>
+                        </a>
 
-            @endif
+                        @endif
 
-        @endforeach
+                        @endforeach
 
-    </div>
+                    </div>
 
-@endif
+                    @endif
 
                 </div>
 
@@ -154,8 +146,24 @@ use Illuminate\Support\Str;
     </div>
 
     <!-- INPUT -->
-    <div class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4">
+    <div
+        class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-2 md:p-4"
+        :class="minimized ? 'h-16 overflow-hidden' : ''">
 
+        <div class="flex justify-between items-center mb-2">
+
+            <button
+                type="button"
+                @click="minimized = !minimized"
+                class="text-gray-400 text-sm">
+
+                <span x-show="!minimized">🔽 Minimizar</span>
+
+                <span x-show="minimized">🔼 Expandir</span>
+
+            </button>
+
+        </div>
         <form
             wire:submit.prevent="sendMessage"
             class="space-y-3">
@@ -168,13 +176,30 @@ use Illuminate\Support\Str;
                 class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
 
             <!-- FECHA REFERENCIA -->
-            <div wire:ignore>
+            <div class="flex items-center gap-2">
 
-                <input
-                    type="text"
-                    id="reference_date"
-                    placeholder="Seleccionar fecha referencia"
-                    class="w-full md:w-80 rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                <!-- BOTON FECHA -->
+                <button
+                    type="button"
+                    @click="showDate = !showDate"
+                    class="bg-gray-700 text-white px-3 py-2 rounded-xl">
+                    📅
+                </button>
+
+                <!-- DATEPICKER -->
+                <div
+                    x-show="showDate"
+                    x-transition
+                    wire:ignore
+                    class="flex-1">
+
+                    <input
+                        type="text"
+                        id="reference_date"
+                        placeholder="Seleccionar fecha referencia"
+                        class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+
+                </div>
 
             </div>
 
@@ -184,7 +209,7 @@ use Illuminate\Support\Str;
                 <input
                     type="file"
                     wire:model="file"
-                        accept="image/*,video/*,.pdf"
+                    accept="image/*,video/*,.pdf"
                     class="text-sm text-gray-500 dark:text-gray-300">
 
                 <!-- LOADING -->
@@ -198,38 +223,38 @@ use Illuminate\Support\Str;
                 </div>
 
                 <!-- BOTON -->
-               <button
+                <button
 
-    type="submit"
+                    type="submit"
 
-    wire:loading.attr="disabled"
+                    wire:loading.attr="disabled"
 
-    wire:target="file,sendMessage"
+                    wire:target="file,sendMessage"
 
-    class="bg-blue-600 hover:bg-blue-700
+                    class="bg-blue-600 hover:bg-blue-700
            disabled:opacity-50
            disabled:cursor-not-allowed
            text-white px-5 py-3 rounded-xl">
 
-    <span wire:loading.remove wire:target="file,sendMessage">
+                    <span wire:loading.remove wire:target="file,sendMessage">
 
-        Enviar
+                        Enviar
 
-    </span>
+                    </span>
 
-    <span wire:loading wire:target="file">
+                    <span wire:loading wire:target="file">
 
-        Subiendo archivo...
+                        Subiendo archivo...
 
-    </span>
+                    </span>
 
-    <span wire:loading wire:target="sendMessage">
+                    <span wire:loading wire:target="sendMessage">
 
-        Enviando...
+                        Enviando...
 
-    </span>
+                    </span>
 
-</button>
+                </button>
 
             </div>
 
@@ -283,48 +308,56 @@ use Illuminate\Support\Str;
 </script>
 
 <script>
+    function scrollToBottom() {
 
-function scrollToBottom() {
+        let container = document.getElementById('chat-container');
 
-    let container = document.getElementById('chat-container');
+        if (container) {
 
-    if (container) {
+            container.scrollTop = container.scrollHeight;
 
-        container.scrollTop = container.scrollHeight;
+        }
 
     }
 
-}
-
-document.addEventListener('livewire:init', () => {
-
-    scrollToBottom();
-
-    Livewire.hook('morph.updated', () => {
+    document.addEventListener('livewire:init', () => {
 
         scrollToBottom();
 
-    });
+        Livewire.hook('morph.updated', () => {
 
-});
-
-</script>
-
-<script>
-
-document.addEventListener('livewire:init', () => {
-
-    let channelId = @json($channel->id);
-
-    window.Echo.channel('chat.' + channelId)
-        .listen('.MessageSent', (e) => {
-
-            console.log('Realtime recibido');
-
-            Livewire.dispatch('refresh-chat');
+            scrollToBottom();
 
         });
 
-});
+    });
+</script>
 
+<script>
+    document.addEventListener('livewire:init', () => {
+
+        let channelId = @json($channel -> id);
+
+        window.Echo.channel('chat.' + channelId)
+            .listen('.MessageSent', (e) => {
+
+                console.log('Realtime recibido');
+
+                Livewire.dispatch('refresh-chat');
+
+            });
+
+    });
+document.addEventListener('clear-date', () => {
+
+    let input = document.querySelector('#reference_date');
+
+    if (input) {
+
+        input._flatpickr.clear();
+
+    }
+
+});
+    
 </script>

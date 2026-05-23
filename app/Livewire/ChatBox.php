@@ -102,6 +102,8 @@ logger($this->file->getMimeType());
         'file',
         'reference_date'
     ]);
+
+    $this->dispatch('clear-date');
 }
 
     public function render()
