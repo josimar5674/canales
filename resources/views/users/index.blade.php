@@ -111,28 +111,28 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
 
                 <!-- TOP -->
-                <div class="flex items-center gap-3">
+         <div class="flex items-center gap-3">
 
-                    <img
-                        src="{{ $user->photo
-                            ? asset('storage/'.$user->photo)
-                            : 'https://ui-avatars.com/api/?name='.$user->name }}"
-                        class="w-14 h-14 rounded-full"
-                    >
+    <img
+        src="{{ $user->photo
+            ? asset('storage/'.$user->photo)
+            : 'https://ui-avatars.com/api/?name='.$user->name }}"
+        class="w-14 h-14 rounded-full object-cover shrink-0"
+    >
 
-                    <div>
+    <div class="min-w-0">
 
-                        <h2 class="font-bold text-lg text-gray-800 dark:text-white">
-                            {{ $user->name }}
-                        </h2>
+        <h2 class="font-bold text-lg text-gray-800 dark:text-white truncate">
+            {{ $user->name }}
+        </h2>
 
-                        <p class="text-sm text-gray-500">
-                            @{{ $user->username }}
-                        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+            {{ $user->username }}
+        </p>
 
-                    </div>
+    </div>
 
-                </div>
+</div>
 
                 <!-- INFO -->
                 <div class="mt-4 space-y-2 text-sm">
