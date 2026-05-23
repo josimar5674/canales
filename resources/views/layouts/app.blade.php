@@ -190,8 +190,7 @@
     <main class="flex-1 flex flex-col">
 
         <!-- HEADER -->
-        <header class="h-16 bg-white dark:bg-gray-800 shadow flex items-center justify-between px-6">
-
+<header class="h-16 bg-white dark:bg-gray-800 shadow flex items-center justify-between px-3 md:px-6">
       <div class="flex items-center gap-4">
 
     <button
@@ -222,8 +221,7 @@
         </header>
 
         <!-- CONTENT -->
-        <section class="flex-1 overflow-y-auto p-6 space-y-6">
-
+<section class="flex-1 overflow-y-auto px-0 py-2 md:p-6 space-y-6">
             @yield('content')
 
         </section>

@@ -17,8 +17,8 @@ use Illuminate\Support\Str;
 <div
     wire:key="chat-{{ $refreshKey }}"
     id="chat-container"
-    class="flex-1 overflow-y-auto overflow-x-hidden
-           space-y-6 px-2 py-4 md:p-6">
+class="flex-1 overflow-y-auto overflow-x-hidden
+space-y-4 px-1 py-2 md:p-6">
 
         @foreach($messages as $message)
 
@@ -150,7 +150,7 @@ use Illuminate\Support\Str;
 <div
     class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
            px-0 py-2 md:px-4 md:py-4"
-    :class="minimized ? 'h-16 overflow-hidden' : ''"
+    x-show="!minimized || window.innerWidth >= 768"
 >
 
         <div class="flex justify-between items-center mb-2">
