@@ -20,9 +20,12 @@
     </div>
 
     <!-- DESKTOP -->
-    <div class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+<div class="hidden md:block">
 
-        <table class="w-full">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-x-auto">
+
+        <table class="w-full min-w-[700px]">
+  
 
             <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
 
@@ -106,9 +109,11 @@
 
             </tbody>
 
-        </table>
+     </table>
 
     </div>
+
+</div>
 
     <!-- MOBILE -->
     <div class="md:hidden space-y-4 mt-4">
