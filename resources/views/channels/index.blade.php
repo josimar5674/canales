@@ -20,8 +20,7 @@
     </div>
 
     <!-- DESKTOP -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-x-auto">
-
+<div class="hidden md:block bg-white dark:bg-gray-800 rounded-2xl shadow overflow-x-auto">
         <table class="w-full min-w-[700px]">
   
 
@@ -113,6 +112,72 @@
      </table>
 
     </div>
+
+    <!-- MOBILE -->
+<div class="md:hidden space-y-4 mt-4">
+
+    @foreach($channels as $channel)
+
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
+
+            <!-- TOP -->
+            <div class="flex justify-between items-center">
+
+                <h2 class="font-bold text-lg text-gray-800 dark:text-white">
+                    # {{ $channel->name }}
+                </h2>
+
+                @if($channel->active)
+
+                    <span class="text-green-500 text-sm font-medium">
+                        Activo
+                    </span>
+
+                @else
+
+                    <span class="text-red-500 text-sm font-medium">
+                        Inactivo
+                    </span>
+
+                @endif
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="mt-4 flex gap-3">
+
+                <a
+                    href="{{ route('channels.edit', $channel) }}"
+                    class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl transition"
+                >
+                    Editar
+                </a>
+
+                <form
+                    method="POST"
+                    action="{{ route('channels.destroy', $channel) }}"
+                    class="flex-1"
+                >
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button
+                        onclick="return confirm('Eliminar canal?')"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl transition"
+                    >
+                        Eliminar
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    @endforeach
+
+</div>
 
 </div>
 
