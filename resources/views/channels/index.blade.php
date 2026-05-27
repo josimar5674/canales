@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center mb-6">
 
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
-            Canales1
+            Canales
         </h1>
 
         <a
@@ -75,7 +75,9 @@
 
                     </td>
 
-                    <td class="p-4 flex gap-3 text-gray-800 dark:text-gray-200">
+                    <td class="p-4 text-gray-800 dark:text-gray-200">
+
+    <div class="flex gap-3">
 
                         <a
                             href="{{ route('channels.edit', $channel) }}"
@@ -100,6 +102,7 @@
                             </button>
 
                         </form>
+    </div>
 
                     </td>
 
