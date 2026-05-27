@@ -20,8 +20,7 @@
     </div>
 
     <!-- DESKTOP -->
-<div class="hidden md:block">
-
+<div class="block">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-x-auto">
 
         <table class="w-full min-w-[700px]">
