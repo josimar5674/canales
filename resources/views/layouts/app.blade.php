@@ -26,12 +26,15 @@
 </head>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
 
-document.addEventListener("DOMContentLoaded", () => {
+    console.log("Solicitando permiso de notificaciones...");
 
-    if ("Notification" in window) {
+    if ('Notification' in window) {
 
-        if (Notification.permission === "default") {
+        console.log(Notification.permission);
+
+        if (Notification.permission === 'default') {
 
             Notification.requestPermission();
 
@@ -40,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-
 </script>
 
 <body
@@ -101,7 +103,17 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
   
+<div id="notificationPermission" class="mt-3">
 
+    <button
+        id="enableNotifications"
+        class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+
+        🔔 Activar notificaciones
+
+    </button>
+
+</div>
      
 
 
@@ -368,7 +380,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+
+
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const btn = document.getElementById('enableNotifications');
+
+    if (!btn) return;
+
+    if (Notification.permission === 'granted') {
+        btn.parentElement.remove();
+        return;
+    }
+
+    btn.addEventListener('click', async () => {
+
+        const permission = await Notification.requestPermission();
+
+        if (permission === 'granted') {
+
+            new Notification('Notificaciones activadas');
+
+            btn.parentElement.remove();
+
+        }
+
+    });
+
+});
+</script>
 </body>
 </html>

@@ -30,7 +30,10 @@ Route::get('/dashboard/{channel?}', function (Channel $channel = null) {
     } else {
 
         // USUARIO SOLO VE SUS CANALES
-        $channels = auth()->user()->channels;
+        $channels = auth()->user()
+    ->channels()
+    ->where('active', true)
+    ->get();
 
     }
 
@@ -40,7 +43,17 @@ Route::get('/dashboard/{channel?}', function (Channel $channel = null) {
         $channel = $channels->first();
 
     }
-    if (
+if (!$channel) {
+
+    return view('dashboard', [
+        'channels' => $channels,
+        'channel' => null,
+        'messages' => collect(),
+    ]);
+
+}
+
+if (
     auth()->user()->role !== 'admin'
     &&
     !$channel->active
