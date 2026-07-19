@@ -65,7 +65,7 @@ return [
     |
     */
 
-'timezone' => 'America/Tegucigalpa',
+            'timezone' => 'America/Tegucigalpa',
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

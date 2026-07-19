@@ -25,6 +25,24 @@
 
 </head>
 
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    if ("Notification" in window) {
+
+        if (Notification.permission === "default") {
+
+            Notification.requestPermission();
+
+        }
+
+    }
+
+});
+
+</script>
+
 <body
 
 
@@ -46,30 +64,11 @@
         : '-translate-x-full md:translate-x-0'"
 
 >
-<div class="md:hidden p-4 flex justify-end">
+<div class="p-4 border-b border-gray-800 flex items-center gap-20">
 
-    <button
-        @click="sidebarOpen = false"
-        class="text-2xl"
-    >
-        ✕
-    </button>
+  
 
-</div>
-
-        <!-- LOGO -->
-        <div class="h-16 flex items-center px-6 border-b border-gray-800">
-
-            <h1 class="text-2xl font-bold tracking-wide">
-                CANALES
-            </h1>
-
-        </div>
-
-        <!-- USER -->
-        <div class="p-4 border-b border-gray-800 flex items-center gap-3">
-
-            <img
+           <img
                src="{{ auth()->user()->photo
     ? asset('storage/'.auth()->user()->photo)
     : 'https://ui-avatars.com/api/?name='.auth()->user()->name }}"
@@ -88,7 +87,23 @@
 
             </div>
 
-        </div>
+         
+
+     <div class="flex-1 flex justify-end">       
+    <button
+        @click="sidebarOpen = false"
+        class="text-2xl"
+    >
+        ✖
+    </button>
+
+</div>
+</div>
+
+  
+
+     
+
 
         <!-- CHANNELS -->
         <div class="flex-1 overflow-y-auto p-3">
@@ -97,18 +112,63 @@
                 Canales
             </p>
 
-            <nav class="space-y-1">
+            <div class="mb-3">
+
+    <input
+        type="text"
+        id="searchChannels"
+        placeholder="🔍 Buscar canal..."
+        class="w-full rounded-lg bg-gray-800 border border-gray-700
+               text-white text-sm px-3 py-2
+               placeholder-gray-400
+               focus:outline-none focus:border-blue-500">
+
+</div>
+
+<div class="mb-4">
+
+    <select
+        id="sortChannels"
+        class="w-full rounded-lg bg-gray-800 border border-gray-700
+               text-white text-sm px-3 py-2">
+
+        <option value="updated_desc">
+            Más recientes
+        </option>
+
+        <option value="updated_asc">
+            Más antiguos
+        </option>
+
+        <option value="az">
+            A → Z
+        </option>
+
+        <option value="za">
+            Z → A
+        </option>
+
+    </select>
+
+</div>
+
+<nav id="channelsList" class="space-y-1">
+    
 @foreach($channels ?? [] as $item)
 
 @if(auth()->user()->role === 'admin' || $item->active)
 
-<a href="{{ route('dashboard', $item->id) }}"
-   class="flex items-center gap-2 px-3 py-2 rounded-lg transition
-   {{ isset($channel) && $channel->id == $item->id
-       ? 'bg-gray-800'
-       : 'hover:bg-gray-700' }}">
+<a
+    href="{{ route('dashboard', $item->id) }}"
+    class="channel-item flex items-center gap-2 px-3 py-2 rounded-lg transition
+    {{ isset($channel) && $channel->id == $item->id
+        ? 'bg-gray-800'
+        : 'hover:bg-gray-700' }}"
+    data-name="{{ strtolower($item->name) }}"
+    data-updated="{{ $item->updated_at->timestamp }}"
+>
 
-    <span>#</span>
+   
 
     <span>
         {{ $item->name }}
@@ -236,6 +296,79 @@
 </div>
 
 @livewireScripts
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const search = document.getElementById('searchChannels');
+    const sort = document.getElementById('sortChannels');
+    const list = document.getElementById('channelsList');
+
+    function applyFilters() {
+
+        let items = Array.from(list.querySelectorAll('.channel-item'));
+
+        // BUSQUEDA
+        const text = search.value.toLowerCase();
+
+        items.forEach(item => {
+
+            item.style.display =
+                item.dataset.name.includes(text)
+                    ? 'flex'
+                    : 'none';
+
+        });
+
+        // SOLO LOS VISIBLES
+        let visibles = items.filter(i => i.style.display !== 'none');
+
+        switch(sort.value){
+
+            case 'az':
+
+                visibles.sort((a,b)=>
+                    a.dataset.name.localeCompare(b.dataset.name)
+                );
+
+            break;
+
+            case 'za':
+
+                visibles.sort((a,b)=>
+                    b.dataset.name.localeCompare(a.dataset.name)
+                );
+
+            break;
+
+            case 'updated_asc':
+
+                visibles.sort((a,b)=>
+                    Number(a.dataset.updated)-Number(b.dataset.updated)
+                );
+
+            break;
+
+            default:
+
+                visibles.sort((a,b)=>
+                    Number(b.dataset.updated)-Number(a.dataset.updated)
+                );
+
+        }
+
+        visibles.forEach(item => list.appendChild(item));
+
+    }
+
+    search.addEventListener('input', applyFilters);
+
+    sort.addEventListener('change', applyFilters);
+
+});
+
+</script>
 
 </body>
 </html>

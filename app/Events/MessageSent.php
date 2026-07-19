@@ -33,8 +33,32 @@ class MessageSent implements ShouldBroadcastNow
         ];
     }
 
-    public function broadcastAs()
-    {
-        return 'MessageSent';
-    }
+  public function broadcastAs()
+{
+    return 'MessageSent';
+}
+
+public function broadcastWith()
+{
+    return [
+        'message' => [
+            'id' => $this->message->id,
+            'content' => $this->message->content,
+            'reference_date' => $this->message->reference_date,
+            'created_at' => $this->message->created_at,
+        ],
+
+        'user' => [
+            'id' => $this->message->user->id,
+            'name' => $this->message->user->name,
+            'photo' => $this->message->user->photo
+                ? asset('storage/' . $this->message->user->photo)
+                : 'https://ui-avatars.com/api/?name=' . urlencode($this->message->user->name),
+        ],
+
+        'channel_id' => $this->message->channel_id,
+    ];
+}
+    
+    
 }

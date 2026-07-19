@@ -14,10 +14,10 @@ use Illuminate\Support\Str;
     x-on:message-received.window="$wire.$refresh()">
 
     <!-- MENSAJES -->
-<div
-    wire:key="chat-{{ $refreshKey }}"
-    id="chat-container"
-class="flex-1 overflow-y-auto overflow-x-hidden
+    <div
+        wire:key="chat-{{ $refreshKey }}"
+        id="chat-container"
+        class="flex-1 overflow-y-auto overflow-x-hidden
 space-y-4 px-1 py-2 md:p-6">
 
         @foreach($messages as $message)
@@ -34,27 +34,50 @@ space-y-4 px-1 py-2 md:p-6">
                     class="w-12 h-12 rounded-full">
 
                 <!-- MENSAJE -->
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow w-full max-w-2xl">
+                <div class="
+    p-4 rounded-2xl shadow w-full max-w-2xl transition-all duration-300
+    {{ auth()->user()->role === 'admin' && $editing && $editingMessage == $message->id
+        ? 'bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-900 border border-blue-500 shadow-lg shadow-blue-900/40 text-white'
+        : 'bg-white dark:bg-gray-800' }}
+">
                     <!-- HEADER -->
-                    <div class="flex items-center gap-3 mb-2">
+                    <div class="flex items-center gap-3 mb-0">
 
-                        <h3 class="font-bold text-gray-800 dark:text-white">
-                            {{ $message->user->name }}
+                        <h3 class="font-bold {{ $editing && $editingMessage == $message->id ? 'text-white' : 'text-gray-800 dark:text-white' }}"> {{ $message->user->name }}
                         </h3>
 
-                        <span class="text-xs text-gray-400">
+                        <span class="text-xs {{ $editing && $editingMessage == $message->id ? 'text-blue-100' : 'text-gray-400' }}">
                             {{ $message->created_at->format('d/m/Y h:i A') }}
                         </span>
+
+                        @if($message->updated_at->gt($message->created_at))
+                        <small class="text-xxs text-gray-400 italic">
+                            (editado)
+                        </small>
+                        @endif
+
+                        @if(auth()->user()->role === 'admin')
+
+                        <button
+                            wire:click="editMessage({{ $message->id }})"
+                            class="ml-auto text-blue-500 hover:text-blue-700 text-sm"
+                            title="Editar mensaje">
+
+                            ✏️
+
+                        </button>
+
+                        @endif
 
                     </div>
 
                     <!-- TEXTO -->
                     @if($message->content)
-
-                    <p class="text-gray-700 dark:text-gray-300">
-                        {{ $message->content }}
-                    </p>
-
+<div
+    style="white-space: pre-wrap; word-break: break-word;"
+    class="leading-6 text-gray-700 dark:text-gray-300">
+    {{ $message->content }}
+</div>
                     @endif
 
                     <!-- FECHA REFERENCIA -->
@@ -64,6 +87,18 @@ space-y-4 px-1 py-2 md:p-6">
 
                         📅 Fecha referencia:
                         {{ \Carbon\Carbon::parse($message->reference_date)->format('d/m/Y h:i A') }}
+
+                    </div>
+
+                    @endif
+
+                    @if(auth()->user()->role === 'admin' && $editing && $editingMessage == $message->id)
+
+                    <div class="mt-2 mb-2">
+
+                        <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                            ✏️ Editando este mensaje
+                        </span>
 
                     </div>
 
@@ -146,172 +181,170 @@ space-y-4 px-1 py-2 md:p-6">
 
     </div>
 
-  <!-- INPUT -->
-<div
-    class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
-           px-0 py-2 md:px-4 md:py-4"
->
+    <!-- INPUT -->
+    <div
+        class="bg-white dark:bg-gray-800 border-t dark:border-gray-700
+           px-0 py-2 md:px-4 md:py-4">
 
-    <!-- BOTON MINIMIZAR -->
-    <div class="flex justify-between items-center mb-2 px-2">
+        <!-- BOTON MINIMIZAR -->
+        <div class="flex justify-between items-center mb-2 px-2">
 
-        <button
-            type="button"
-            @click="minimized = !minimized"
-            class="text-gray-400 text-sm">
+            <button
+                type="button"
+                @click="minimized = !minimized"
+                class="text-gray-400 text-sm">
 
-            <span x-show="!minimized">🔽 Minimizar</span>
+                <span x-show="!minimized">🔽 Minimizar</span>
 
-            <span x-show="minimized">🔼 Expandir</span>
+                <span x-show="minimized">🔼 Expandir</span>
 
-        </button>
+            </button>
 
-    </div>
+        </div>
 
-    <!-- FORMULARIO -->
-    <div x-show="!minimized" x-transition>
+        <!-- FORMULARIO -->
+        <div x-show="!minimized" x-transition>
 
-        <form
-            wire:submit.prevent="sendMessage"
-            class="space-y-3 px-1 md:px-0">
+            <form
+                wire:submit.prevent="sendMessage"
+                class="space-y-3 px-1 md:px-0">
 
-            <!-- MENSAJE -->
-            <input
-                type="text"
-                wire:model.live="content"
-                placeholder="Escribe un mensaje..."
-                class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                <!-- MENSAJE -->
+               <textarea
+    wire:model.defer="content"
+    rows="3"
+    placeholder="Escribe un mensaje..."
+    class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600 resize-none">
+</textarea>           <!-- FECHA -->
+                <div class="flex items-center gap-2">
 
-            <!-- FECHA -->
-            <div class="flex items-center gap-2">
+                    <!-- BOTON FECHA -->
+                    <button
+                        type="button"
+                        @click="showDate = !showDate"
+                        class="bg-gray-700 text-white px-3 py-2 rounded-xl">
 
-                <!-- BOTON FECHA -->
-                <button
-                    type="button"
-                    @click="showDate = !showDate"
-                    class="bg-gray-700 text-white px-3 py-2 rounded-xl">
+                        📅
 
-                    📅
+                    </button>
 
-                </button>
+                    <!-- INPUT FECHA -->
+                    <div
+                        x-show="showDate"
+                        x-transition
+                        wire:ignore
+                        class="flex-1">
 
-                <!-- INPUT FECHA -->
-                <div
-                    x-show="showDate"
-                    x-transition
-                    wire:ignore
-                    class="flex-1">
+                        <input
+                            type="text"
+                            id="reference_date"
+                            placeholder="Seleccionar fecha referencia"
+                            class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
 
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+
+                    <!-- FILE -->
                     <input
-                        type="text"
-                        id="reference_date"
-                        placeholder="Seleccionar fecha referencia"
-                        class="w-full rounded-xl border-gray-300 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                        type="file"
+                        wire:model="file"
+                        accept="image/*,video/*,.pdf"
+                        class="text-sm text-gray-500 dark:text-gray-300">
 
-                </div>
+                    <!-- LOADING -->
+                    <div
+                        wire:loading
+                        wire:target="file"
+                        class="text-sm text-blue-500">
 
-            </div>
+                        Subiendo archivo...
 
-            <!-- FOOTER -->
-            <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+                    </div>
 
-                <!-- FILE -->
-                <input
-                    type="file"
-                    wire:model="file"
-                    accept="image/*,video/*,.pdf"
-                    class="text-sm text-gray-500 dark:text-gray-300">
-
-                <!-- LOADING -->
-                <div
-                    wire:loading
-                    wire:target="file"
-                    class="text-sm text-blue-500">
-
-                    Subiendo archivo...
-
-                </div>
-
-                <!-- BOTON ENVIAR -->
-                <button
-                    type="submit"
-                    wire:loading.attr="disabled"
-                    wire:target="file,sendMessage"
-                    class="bg-blue-600 hover:bg-blue-700
+                    <!-- BOTON ENVIAR -->
+                    <button
+                        type="submit"
+                        wire:loading.attr="disabled"
+                        wire:target="file,sendMessage"
+                        class="bg-blue-600 hover:bg-blue-700
                            disabled:opacity-50
                            disabled:cursor-not-allowed
                            text-white px-5 py-3 rounded-xl">
 
-                    <span wire:loading.remove wire:target="file,sendMessage">
+                        <span wire:loading.remove wire:target="file,sendMessage">
 
-                        Enviar
+                            Enviar
 
-                    </span>
+                        </span>
 
-                    <span wire:loading wire:target="file">
+                        <span wire:loading wire:target="file">
 
-                        Subiendo archivo...
+                            Subiendo archivo...
 
-                    </span>
+                        </span>
 
-                    <span wire:loading wire:target="sendMessage">
+                        <span wire:loading wire:target="sendMessage">
 
-                        Enviando...
+                            Enviando...
 
-                    </span>
+                        </span>
 
-                </button>
+                    </button>
 
-            </div>
+                </div>
 
-        </form>
+            </form>
+
+        </div>
 
     </div>
 
-</div>
+    <script>
+        function initDatePicker() {
 
-<script>
-    function initDatePicker() {
+            flatpickr("#reference_date", {
+                appendTo: document.body,
 
-        flatpickr("#reference_date", {
-            appendTo: document.body,
+                position: "top",
+                enableTime: true,
+                disableMobile: true,
+                noCalendar: false,
 
-            position: "top",
-            enableTime: true,
-            disableMobile: true,
-            noCalendar: false,
+                time_24hr: true,
 
-            time_24hr: true,
+                enableSeconds: false,
 
-            enableSeconds: false,
+                minuteIncrement: 1,
 
-            minuteIncrement: 1,
+                dateFormat: "Y-m-d H:i:S",
 
-            dateFormat: "Y-m-d H:i:S",
+                onClose: function(selectedDates, dateStr) {
+                    Livewire.find(
+                        document.querySelector('[wire\\:id]').getAttribute('wire:id')
+                    ).set('reference_date', dateStr);
 
-            onClose: function(selectedDates, dateStr) {
-                Livewire.find(
-                    document.querySelector('[wire\\:id]').getAttribute('wire:id')
-                ).set('reference_date', dateStr);
+                }
 
-            }
+            });
 
-        });
+        }
 
-    }
-
-    document.addEventListener('livewire:init', () => {
-
-        initDatePicker();
-
-        Livewire.hook('morph.updated', () => {
+        document.addEventListener('livewire:init', () => {
 
             initDatePicker();
 
-        });
+            Livewire.hook('morph.updated', () => {
 
-    });
-</script>
+                initDatePicker();
+
+            });
+
+        });
+    </script>
 
 <script>
     function scrollToBottom() {
@@ -328,9 +361,11 @@ space-y-4 px-1 py-2 md:p-6">
 
     document.addEventListener('livewire:init', () => {
 
+        // Solo al cargar la página
         scrollToBottom();
 
-        Livewire.hook('morph.updated', () => {
+        // Solo cuando Livewire lo solicite
+        Livewire.on('scroll-bottom', () => {
 
             scrollToBottom();
 
@@ -339,31 +374,46 @@ space-y-4 px-1 py-2 md:p-6">
     });
 </script>
 
-<script>
-    document.addEventListener('livewire:init', () => {
+    <script>
+        document.addEventListener('livewire:init', () => {
 
-        let channelId = @json($channel -> id);
+            let channelId = @json($channel -> id);
 
-        window.Echo.channel('chat.' + channelId)
-            .listen('.MessageSent', (e) => {
+    window.Echo.channel('chat.' + channelId)
+    .listen('.MessageSent', (e) => {
 
-                console.log('Realtime recibido');
+        console.log('Realtime recibido');
 
-                Livewire.dispatch('refresh-chat');
+        Livewire.dispatch('refresh-chat');
 
-            });
+        if (
+            Notification.permission === "granted"
+            &&
+            document.hidden
+        ) {
+
+            new Notification(
+                e.user.name,
+                {
+                    body: e.message.content ?? "Archivo adjunto",
+                    icon: e.user.photo
+                }
+            );
+
+        }
 
     });
-document.addEventListener('clear-date', () => {
 
-    let input = document.querySelector('#reference_date');
+        });
+        document.addEventListener('clear-date', () => {
 
-    if (input) {
+            let input = document.querySelector('#reference_date');
 
-        input._flatpickr.clear();
+            if (input) {
 
-    }
+                input._flatpickr.clear();
 
-});
-    
-</script>
+            }
+
+        });
+    </script>
