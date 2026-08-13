@@ -54,10 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="flex h-screen overflow-hidden">
 
 <aside
-
-
-
-    class="fixed md:relative z-50 w-72 bg-gray-900 text-white flex flex-col h-full transition-transform duration-300"
+    class="fixed md:relative z-50 w-72 flex-shrink-0 bg-gray-900 text-white flex flex-col h-full transition-transform duration-300"
 
     :class="sidebarOpen
 
@@ -262,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ></div>
 
     <!-- MAIN -->
-    <main class="flex-1 flex flex-col">
+   <main class="flex-1 min-w-0 flex flex-col">
 
         <!-- HEADER -->
 <header class="h-16 bg-white dark:bg-gray-800 shadow flex items-center justify-between px-3 md:px-6">
@@ -296,7 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </header>
 
         <!-- CONTENT -->
-<section class="flex-1 overflow-y-auto px-0 py-2 md:p-6 space-y-6">
+<section
+    class="flex-1 min-w-0 min-h-0 overflow-y-auto overflow-x-hidden px-0 py-2 md:p-6 space-y-6"
+>
             @yield('content')
 
         </section>

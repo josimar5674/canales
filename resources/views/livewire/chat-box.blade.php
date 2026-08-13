@@ -5,58 +5,94 @@ use Illuminate\Support\Str;
 @endphp
 
 
+
 <div
-
     id="chat-box-component"
-
-    class="flex flex-col h-full"
+    class="flex flex-col h-full min-w-0"
     x-data="{ showDate: false, minimized: false }"
     x-on:message-received.window="$wire.$refresh()">
 
     <!-- MENSAJES -->
-    <div
-        wire:key="chat-{{ $refreshKey }}"
-        id="chat-container"
-        class="flex-1 overflow-y-auto overflow-x-hidden
-space-y-4 px-1 py-2 md:p-6">
+<!-- MENSAJES -->
+<div
+    wire:key="chat-{{ $refreshKey }}"
+    id="chat-container"
+    class="flex-1 min-w-0 overflow-y-auto overflow-x-hidden
+    space-y-4 px-1 py-2 md:p-6">
 
-        @foreach($messages as $message)
+    @foreach($messages as $message)
 
-        <div wire:key="message-{{ $message->id }}">
+    <div wire:key="message-{{ $message->id }}">
 
-            <div class="flex gap-3 items-start">
+        <!-- FILA DEL MENSAJE -->
+       <div class="flex gap-3 items-start w-full min-w-0">
 
-                <!-- AVATAR -->
-                <img
-                    src="{{ $message->user->photo
-        ? asset('storage/'.$message->user->photo)
-        : 'https://ui-avatars.com/api/?name='.$message->user->name }}"
-                    class="w-12 h-12 rounded-full">
+            <!-- AVATAR -->
+            <img
+                src="{{ $message->user->photo
+                    ? asset('storage/'.$message->user->photo)
+                    : 'https://ui-avatars.com/api/?name='.$message->user->name }}"
+                class="w-12 h-12 rounded-full flex-shrink-0">
 
-                <!-- MENSAJE -->
-                <div class="
-    p-4 rounded-2xl shadow w-full max-w-2xl transition-all duration-300
-    {{ auth()->user()->role === 'admin' && $editing && $editingMessage == $message->id
-        ? 'bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-900 border border-blue-500 shadow-lg shadow-blue-900/40 text-white'
-        : 'bg-white dark:bg-gray-800' }}
-">
-                    <!-- HEADER -->
-                    <div class="flex items-center gap-3 mb-0">
+            <!-- MENSAJE -->
+            @php
+                $hasTable = app(\App\Support\MessageContentFormatter::class)
+                    ->hasTable($message->content ?? '');
+            @endphp
 
-                        <h3 class="font-bold {{ $editing && $editingMessage == $message->id ? 'text-white' : 'text-gray-800 dark:text-white' }}"> {{ $message->user->name }}
-                        </h3>
+       <div
+    class="
+        p-4
+        rounded-2xl
+        shadow
+        min-w-0
+        transition-all
+        duration-300
 
-                        <span class="text-xs {{ $editing && $editingMessage == $message->id ? 'text-blue-100' : 'text-gray-400' }}">
-                            {{ $message->created_at->format('d/m/Y h:i A') }}
-                        </span>
+        {{ $hasTable
+            ? 'w-[80%] max-w-[80%]'
+            : 'w-fit max-w-2xl' }}
 
-                        @if($message->updated_at->gt($message->created_at))
+        {{ auth()->user()->role === 'admin'
+            && $editing
+            && $editingMessage == $message->id
+
+            ? 'bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-900 border border-blue-500 shadow-lg shadow-blue-900/40 text-white'
+
+            : 'bg-white dark:bg-gray-800' }}
+    "
+>
+
+                <!-- HEADER -->
+                <div class="flex items-center gap-3 mb-0">
+
+                    <h3 class="
+                        font-bold
+                        {{ $editing && $editingMessage == $message->id
+                            ? 'text-white'
+                            : 'text-gray-800 dark:text-white' }}
+                    ">
+                        {{ $message->user->name }}
+                    </h3>
+
+                    <span class="
+                        text-xs
+                        {{ $editing && $editingMessage == $message->id
+                            ? 'text-blue-100'
+                            : 'text-gray-400' }}
+                    ">
+                        {{ $message->created_at->format('d/m/Y h:i A') }}
+                    </span>
+
+                    @if($message->updated_at->gt($message->created_at))
+
                         <small class="text-xxs text-gray-400 italic">
                             (editado)
                         </small>
-                        @endif
 
-                        @if(auth()->user()->role === 'admin')
+                    @endif
+
+                    @if(auth()->user()->role === 'admin')
 
                         <button
                             wire:click="editMessage({{ $message->id }})"
@@ -67,24 +103,29 @@ space-y-4 px-1 py-2 md:p-6">
 
                         </button>
 
-                        @endif
+                    @endif
+
+                </div>
+
+                <!-- TEXTO / TABLA -->
+                @if($message->content)
+
+                    <div class="
+                        text-gray-700
+                        dark:text-gray-300
+                        min-w-0
+                        max-w-full
+                    ">
+
+                        {!! app(\App\Support\MessageContentFormatter::class)
+                            ->render($message->content) !!}
 
                     </div>
 
-                    <!-- TEXTO -->
-                @if($message->content)
+                @endif
 
-    <div class="text-gray-700 dark:text-gray-300">
-
-        {!! app(\App\Support\MessageContentFormatter::class)
-            ->render($message->content) !!}
-
-    </div>
-
-@endif
-
-                    <!-- FECHA REFERENCIA -->
-                    @if($message->reference_date)
+                <!-- FECHA REFERENCIA -->
+                @if($message->reference_date)
 
                     <div class="mt-3 text-xs text-blue-500">
 
@@ -93,9 +134,14 @@ space-y-4 px-1 py-2 md:p-6">
 
                     </div>
 
-                    @endif
+                @endif
 
-                    @if(auth()->user()->role === 'admin' && $editing && $editingMessage == $message->id)
+                <!-- EDITANDO -->
+                @if(
+                    auth()->user()->role === 'admin'
+                    && $editing
+                    && $editingMessage == $message->id
+                )
 
                     <div class="mt-2 mb-2">
 
@@ -105,84 +151,110 @@ space-y-4 px-1 py-2 md:p-6">
 
                     </div>
 
-                    @endif
+                @endif
 
-                    <!-- ADJUNTOS -->
-                    <!-- ADJUNTOS -->
-                    @if($message->attachments->count())
+                <!-- ADJUNTOS -->
+                @if($message->attachments->count())
 
                     <div class="mt-4 space-y-3">
 
                         @foreach($message->attachments as $attachment)
 
-                        @php
+                            @php
+                                $type = $attachment->file_type;
+                            @endphp
 
-                        $type = $attachment->file_type;
+                            <!-- IMAGEN -->
+                            @if(Str::startsWith($type, 'image/'))
 
-                        @endphp
+                                <a
+                                    href="{{ asset('storage/' . $attachment->file_path) }}"
+                                    target="_blank">
 
-                        <!-- IMAGEN -->
-                        @if(Str::startsWith($type, 'image/'))
+                                    <img
+                                        src="{{ asset('storage/' . $attachment->file_path) }}"
+                                        class="
+                                            rounded-xl
+                                            border
+                                            dark:border-gray-700
+                                            hover:opacity-90
+                                            transition
+                                            max-w-full
+                                            md:max-w-xs
+                                            max-h-64
+                                            object-cover
+                                        "
+                                    >
 
-                        <a
-                            href="{{ asset('storage/' . $attachment->file_path) }}"
-                            target="_blank">
+                                </a>
 
-                            <img
-                                src="{{ asset('storage/' . $attachment->file_path) }}"
-                                class="rounded-xl border dark:border-gray-700 hover:opacity-90 transition max-w-full md:max-w-xs max-h-64 object-cover">
+                            <!-- VIDEO -->
+                            @elseif(Str::startsWith($type, 'video/'))
 
-                        </a>
+                                <video
+                                    controls
+                                    class="rounded-xl max-w-sm">
 
-                        <!-- VIDEO -->
-                        @elseif(Str::startsWith($type, 'video/'))
+                                    <source
+                                        src="{{ asset('storage/' . $attachment->file_path) }}"
+                                        type="{{ $type }}">
 
-                        <video
-                            controls
-                            class="rounded-xl max-w-sm">
+                                </video>
 
-                            <source
-                                src="{{ asset('storage/' . $attachment->file_path) }}"
-                                type="{{ $type }}">
+                            <!-- PDF -->
+                            @elseif($type === 'application/pdf')
 
-                        </video>
+                                <iframe
+                                    src="{{ asset('storage/' . $attachment->file_path) }}"
+                                    class="
+                                        w-full
+                                        h-96
+                                        rounded-xl
+                                        border
+                                        dark:border-gray-700
+                                    "
+                                ></iframe>
 
-                        <!-- PDF -->
-                        @elseif($type === 'application/pdf')
+                            <!-- OTROS -->
+                            @else
 
-                        <iframe
-                            src="{{ asset('storage/' . $attachment->file_path) }}"
-                            class="w-full h-96 rounded-xl border dark:border-gray-700"></iframe>
+                                <a
+                                    href="{{ asset('storage/' . $attachment->file_path) }}"
+                                    target="_blank"
+                                    class="
+                                        block
+                                        bg-gray-100
+                                        dark:bg-gray-700
+                                        px-3
+                                        py-2
+                                        rounded-lg
+                                        text-sm
+                                        hover:bg-gray-200
+                                        dark:hover:bg-gray-600
+                                        transition
+                                    ">
 
-                        <!-- OTROS -->
-                        @else
+                                    📎 {{ $attachment->file_name }}
 
-                        <a
-                            href="{{ asset('storage/' . $attachment->file_path) }}"
-                            target="_blank"
-                            class="block bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                                </a>
 
-                            📎 {{ $attachment->file_name }}
-
-                        </a>
-
-                        @endif
+                            @endif
 
                         @endforeach
 
                     </div>
 
-                    @endif
-
-                </div>
+                @endif
 
             </div>
 
         </div>
 
-        @endforeach
-
     </div>
+
+    @endforeach
+
+</div>
 
     <!-- INPUT -->
     <div
