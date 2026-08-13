@@ -72,13 +72,16 @@ space-y-4 px-1 py-2 md:p-6">
                     </div>
 
                     <!-- TEXTO -->
-                    @if($message->content)
-<div
-    style="white-space: pre-wrap; word-break: break-word;"
-    class="leading-6 text-gray-700 dark:text-gray-300">
-    {{ $message->content }}
-</div>
-                    @endif
+                @if($message->content)
+
+    <div class="text-gray-700 dark:text-gray-300">
+
+        {!! app(\App\Support\MessageContentFormatter::class)
+            ->render($message->content) !!}
+
+    </div>
+
+@endif
 
                     <!-- FECHA REFERENCIA -->
                     @if($message->reference_date)
